@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "user_name": "cesar",
+      "email": "cesar@gmail.com",
+      "preferred_stocks": ["AAPL", "AA"]
+    },
+    {
+      "user_name": "carlos",
+      "email": "carlos@hotmail.com",
+      "preferred_stocks": ["AA"]
+    },
+    {
+      "user_name": "brighton",
+      "email": "brighton@hotmail.com",
+      "preferred_stocks": ["MDP", "MGM", "MD", "MLM"]
+    }
+  ]
+}
