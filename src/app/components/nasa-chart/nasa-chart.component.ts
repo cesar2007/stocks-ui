@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { Subscription } from 'rxjs';
+import { Stock } from 'src/app/models/stock.model';
 import { DataStocksService } from 'src/app/services/data-stocks.service';
 
 @Component({
@@ -18,29 +18,15 @@ export class NasaChartComponent {
   xValues: string[] = [];
 
   data!: any;
-  private dataSubscription!: Subscription;
   condensedData: any;
 
-  constructor(private dataService: DataStocksService) {}
+  catalogResponse!: Stock[];
 
-  async getData() {
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(async () => {
-        const response = await fetch('assets/ZonAnn.Ts+dSST.csv');
-        const data = await response.text();
-        const table = data.split('\n').slice(1);
-        table.forEach((row) => {
-          const columns = row.split(',');
-          const year = columns[0];
-          this.xlabels.push(year);
-          const temp = columns[1];
-          this.ytemps.push(parseFloat(temp) + 14);
+  ngOnInit() {
 
-        });
-        resolve();
-      }, 3000);
-    });
   }
+
+  constructor(private dataService: DataStocksService) {}
 
   async getStocksData(){
     return new Promise<void>((resolve, reject) => {
@@ -49,11 +35,8 @@ export class NasaChartComponent {
         .subscribe((data : any) => {
           this.data = data;
           console.log(data);
-
-          const aaplData = data.AAPL;
-          console.log(aaplData);
+          const aaplData = data['AAPL'];
           const applDataValues = aaplData.values;
-          console.log(applDataValues);
 
           applDataValues.forEach((item : {close: any}) =>{
             this.yValues.push(Number(item.close));
@@ -84,45 +67,6 @@ export class NasaChartComponent {
     }
   }
 
-  async callCreateBarChart(){
-    try {
-      await this.getData();
-      this.createBarChart();
-    } catch (error){
-      console.log('Error fetching stocks data: ', error);
-    }
-  }
-
-  createBarChart() {
-    const ctx = this.barChartCanvas.nativeElement.getContext('2d');
-    console.log(this.ytemps);
-    this.barChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: this.xlabels,
-        datasets: [
-          {
-            label: 'Global Average Temperature',
-            data: this.ytemps,
-            backgroundColor: ['rgba(255, 99, 132, 0.2'],
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: false,
-            ticks: {
-              callback: function (value, index, ticks) {
-                return value ;
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
   createStocksChart(labelValue: string) {
     const ctx = this.barChartCanvas.nativeElement.getContext('2d');
     this.barChart = new Chart(ctx, {
@@ -150,5 +94,12 @@ export class NasaChartComponent {
         },
       },
     });
+  }
+
+  createStockCatalog(){
+    this.dataService.getStocksCatalog().subscribe( (response: any)=>{
+      const myResponse = response['data'];
+      console.log(myResponse);
+    })
   }
 }
