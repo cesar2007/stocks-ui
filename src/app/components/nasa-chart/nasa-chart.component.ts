@@ -1,7 +1,14 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Chart } from 'chart.js';
 import { Stock } from 'src/app/models/stock.model';
+import { CountryService } from 'src/app/services/country.service';
 import { DataStocksService } from 'src/app/services/data-stocks.service';
+
+interface AutoCompleteCompleteEvent {
+  originalEvent: Event;
+  query: string;
+}
 
 @Component({
   selector: 'nasa-chart',
@@ -22,32 +29,62 @@ export class NasaChartComponent {
 
   catalogResponse!: Stock[];
 
+  countries: any[] | undefined;
+
+  formGroup!: FormGroup;
+
+  filteredCountries!: any[];
+
   ngOnInit() {
 
+
+
+    this.countryService.getCountries().then((countries) => {
+      this.countries = countries;
+    });
+
+    this.formGroup = new FormGroup({
+      selectedCountry: new FormControl<object | null>(null),
+    });
   }
 
-  constructor(private dataService: DataStocksService) {}
+  filterCountry(event: AutoCompleteCompleteEvent) {
+    let filtered: any[] = [];
+    let query = event.query;
 
-  async getStocksData(){
+    for (let i = 0; i < (this.countries as any[]).length; i++) {
+        let country = (this.countries as any[])[i];
+        if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+            filtered.push(country);
+        }
+    }
+
+    this.filteredCountries = filtered;
+}
+
+  constructor(private dataService: DataStocksService, private countryService: CountryService) {}
+
+  async getStocksData() {
     return new Promise<void>((resolve, reject) => {
       setTimeout(async () => {
-        this.dataService.getStocksDataWithLocalAPI()
-        .subscribe((data : any) => {
+        this.dataService.getStocksDataWithLocalAPI().subscribe((data: any) => {
           this.data = data;
           console.log(data);
           const aaplData = data['AAPL'];
           const applDataValues = aaplData.values;
 
-          applDataValues.forEach((item : {close: any}) =>{
+          applDataValues.forEach((item: { close: any }) => {
             this.yValues.push(Number(item.close));
           });
           console.log(this.yValues);
 
-          applDataValues.forEach((item : {datetime: any}) =>{
+          applDataValues.forEach((item: { datetime: any }) => {
             const dateObject = new Date(item.datetime);
-            const timeString = dateObject.toLocaleTimeString('en-US', { hour12: false });
+            const timeString = dateObject.toLocaleTimeString('en-US', {
+              hour12: false,
+            });
             this.xValues.push(timeString);
-          })
+          });
           this.createStocksChart('AAPL');
           resolve();
         });
@@ -59,10 +96,10 @@ export class NasaChartComponent {
     this.callCreateStocksChart();
   }
 
-  async callCreateStocksChart(){
+  async callCreateStocksChart() {
     try {
       await this.getStocksData();
-    } catch (error){
+    } catch (error) {
       console.log('Error fetching stocks data: ', error);
     }
   }
@@ -87,7 +124,7 @@ export class NasaChartComponent {
             beginAtZero: false,
             ticks: {
               callback: function (value, index, ticks) {
-                return value ;
+                return value;
               },
             },
           },
@@ -96,10 +133,10 @@ export class NasaChartComponent {
     });
   }
 
-  createStockCatalog(){
-    this.dataService.getStocksCatalog().subscribe( (response: any)=>{
+  createStockCatalog() {
+    this.dataService.getStocksCatalog().subscribe((response: any) => {
       const myResponse = response['data'];
       console.log(myResponse);
-    })
+    });
   }
 }

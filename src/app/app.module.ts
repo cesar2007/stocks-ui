@@ -10,7 +10,9 @@ import { ChartStocksComponent } from './components/chart-stocks/chart-stocks.com
 import { HttpClientModule } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { CountryService } from './services/country.service';
 
 @NgModule({
   declarations: [
@@ -27,9 +29,11 @@ import {FormsModule} from "@angular/forms";
     HttpClientModule,
     ButtonModule,
     DropdownModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    AutoCompleteModule
   ],
-  providers: [],
+  providers: [CountryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
