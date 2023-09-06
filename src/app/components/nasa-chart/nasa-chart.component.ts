@@ -18,48 +18,40 @@ interface AutoCompleteCompleteEvent {
 export class NasaChartComponent {
   @ViewChild('barChart', { static: true }) barChartCanvas!: ElementRef;
   barChart!: Chart;
-  xlabels: any = [];
-  ytemps: any[] = [];
-
   yValues: number[] = [];
   xValues: string[] = [];
 
   data!: any;
-  condensedData: any;
 
   catalogResponse!: Stock[];
 
-  countries: any[] | undefined;
+  stocks!: Stock[];
 
   formGroup!: FormGroup;
 
-  filteredCountries!: any[];
+  filteredStocks!: Stock[];
+
+  myFavoriteStock: string = "AA";
 
   ngOnInit() {
-
-
-
-    this.countryService.getCountries().then((countries) => {
-      this.countries = countries;
+    this.dataService.getStocksCatalog().subscribe((response: any) => {
+      this.stocks = response['data'];
     });
-
     this.formGroup = new FormGroup({
-      selectedCountry: new FormControl<object | null>(null),
+      selectedStock: new FormControl<Stock | null>(null),
     });
   }
 
-  filterCountry(event: AutoCompleteCompleteEvent) {
+  filterStock(event: AutoCompleteCompleteEvent) {
     let filtered: any[] = [];
     let query = event.query;
-
-    for (let i = 0; i < (this.countries as any[]).length; i++) {
-        let country = (this.countries as any[])[i];
-        if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-            filtered.push(country);
+    for (let i = 0; i < (this.stocks as any[]).length; i++) {
+        let stock = (this.stocks as any[])[i];
+        if (stock.symbol.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+            filtered.push(stock);
         }
     }
-
-    this.filteredCountries = filtered;
+    this.filteredStocks = filtered;
 }
 
   constructor(private dataService: DataStocksService, private countryService: CountryService) {}
@@ -67,17 +59,14 @@ export class NasaChartComponent {
   async getStocksData() {
     return new Promise<void>((resolve, reject) => {
       setTimeout(async () => {
-        this.dataService.getStocksDataWithLocalAPI().subscribe((data: any) => {
+        this.dataService.getStocksDataBySymbol(this.myFavoriteStock).subscribe((data: any) => {
           this.data = data;
           console.log(data);
-          const aaplData = data['AAPL'];
+          const aaplData = data[this.myFavoriteStock];
           const applDataValues = aaplData.values;
-
           applDataValues.forEach((item: { close: any }) => {
             this.yValues.push(Number(item.close));
           });
-          console.log(this.yValues);
-
           applDataValues.forEach((item: { datetime: any }) => {
             const dateObject = new Date(item.datetime);
             const timeString = dateObject.toLocaleTimeString('en-US', {
@@ -85,11 +74,18 @@ export class NasaChartComponent {
             });
             this.xValues.push(timeString);
           });
-          this.createStocksChart('AAPL');
+          this.createStocksChart(this.myFavoriteStock);
           resolve();
         });
-      }, 3000);
+      }, 1500);
     });
+  }
+
+  saveStock(){
+    console.log("guardando...");
+    this.myFavoriteStock = this.formGroup.value['selectedStock'].symbol;
+    console.log(this.myFavoriteStock);
+    this.formGroup.reset();
   }
 
   async ngAfterViewInit() {
@@ -133,10 +129,4 @@ export class NasaChartComponent {
     });
   }
 
-  createStockCatalog() {
-    this.dataService.getStocksCatalog().subscribe((response: any) => {
-      const myResponse = response['data'];
-      console.log(myResponse);
-    });
-  }
 }

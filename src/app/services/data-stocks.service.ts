@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Stock } from '../models/stock.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,12 @@ export class DataStocksService {
   }
 
   getStocksCatalog(){
-    return this.http.get(`${this.API_LOCAL_URL}/stocks-catalog`);
+    return this.http.get<Stock[]>(`${this.API_LOCAL_URL}/stocks-catalog`);
+  }
+
+  getStocksDataBySymbol(symbols: string){
+    const params = new HttpParams().set('symbols', symbols);
+    return this.http.get(`${this.API_LOCAL_URL}/data-by-symbol`, { params });
   }
 
 
