@@ -17,6 +17,7 @@ import { CardModule } from 'primeng/card';
 import { LoginComponent } from './components/login/login.component';
 import { ErrorComponent } from './components/error/error.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
     FormsModule,
     ReactiveFormsModule,
     AutoCompleteModule,
-    CardModule
+    CardModule,
+    TableModule
 
   ],
   providers: [CountryService],

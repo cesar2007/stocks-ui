@@ -7,5 +7,26 @@
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </div>
+  <div>
+    <p>These are your previously selected stocks</p>
+  </div>
+  <p-table [value]="preferredStocksObject" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Currency</th>
+            <th>Action</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-savedStock>
+        <tr>
+            <td>{{ savedStock.symbol }}</td>
+            <td>{{ savedStock.name }}</td>
+            <td>{{ savedStock.currency }}</td>
+            <td>delete</td>
+        </tr>
+    </ng-template>
+</p-table>
 
 </div>

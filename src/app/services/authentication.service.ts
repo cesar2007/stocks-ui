@@ -31,9 +31,9 @@ export class AuthenticationService {
     let headers = new HttpHeaders({
       Authorization: basicAuthHeaderString
     })
-    return this.http.get<string>(`http://localhost:8080/api/v1/signup`, {headers, responseType: 'text' as 'json'})
+    return this.http.get(`http://localhost:8080/api/v1/auth`, {headers, responseType: 'text' as 'json'})
       .pipe(
-        map((data: string) => {
+        map((data: any) => {
           this.isLoggedInState = true;
           sessionStorage.setItem(TOKEN, data);
           const decodedToken: any = jwt_decode(data);

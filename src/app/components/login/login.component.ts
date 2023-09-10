@@ -32,14 +32,23 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    this.authService.basicLogin(this.email).subscribe( data =>{
-      if (data.message === "Usuario autorizado"){
+    this.authService.basicLoginWithEncryption(this.email, this.password).subscribe(
+      data => {
         this.invalidLogin = false;
-        this.router.navigate(['/home', this.email]);
-      } else {
-        this.invalidLogin = true;
+        this.router.navigate(['/home']);
+      },
+      error => {
+        console.log('there was an error in the response', error);
       }
-    })
+    )
+    // this.authService.basicLogin(this.email).subscribe( data =>{
+    //   if (data.message === "Usuario autorizado"){
+    //     this.invalidLogin = false;
+    //     this.router.navigate(['/home', this.email]);
+    //   } else {
+    //     this.invalidLogin = true;
+    //   }
+    // })
   }
 
 }
