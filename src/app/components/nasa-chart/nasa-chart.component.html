@@ -1,9 +1,15 @@
-<button class="btn btn-primary" (click)="getStocksData()">Get Data</button>
 
-<canvas #barChart width="800" height="400"></canvas>
+<div class="container">
+  <p>You are logged in as {{userEmail}}</p>
+  <p>Here, you can check on your favorite stocks</p>
+  <div class="menubar">
+    <form (ngSubmit)="saveStock()" [formGroup]="formGroup">
+      <p-autoComplete formControlName="selectedStock" [dropdown]="true" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
 
-
-<form (ngSubmit)="saveStock()" [formGroup]="formGroup">
-    <p-autoComplete formControlName="selectedStock" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+  <div class="chart">
+    <canvas #barChart ></canvas>
+  </div>
+</div>

@@ -13,6 +13,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CountryService } from './services/country.service';
+import { CardModule } from 'primeng/card';
+import { LoginComponent } from './components/login/login.component';
+import { ErrorComponent } from './components/error/error.component';
+import { WelcomeComponent } from './components/welcome/welcome.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +24,10 @@ import { CountryService } from './services/country.service';
     ChartsComponent,
     NasaChartComponent,
     IssChartComponent,
-    ChartStocksComponent
+    ChartStocksComponent,
+    LoginComponent,
+    ErrorComponent,
+    WelcomeComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +38,9 @@ import { CountryService } from './services/country.service';
     DropdownModule,
     FormsModule,
     ReactiveFormsModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    CardModule
+
   ],
   providers: [CountryService],
   bootstrap: [AppComponent]

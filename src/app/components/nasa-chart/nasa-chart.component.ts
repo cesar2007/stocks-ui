@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Chart } from 'chart.js';
 import { Stock } from 'src/app/models/stock.model';
 import { CountryService } from 'src/app/services/country.service';
@@ -20,20 +21,18 @@ export class NasaChartComponent {
   barChart!: Chart;
   yValues: number[] = [];
   xValues: string[] = [];
-
   data!: any;
-
   catalogResponse!: Stock[];
-
   stocks!: Stock[];
-
   formGroup!: FormGroup;
-
   filteredStocks!: Stock[];
-
   myFavoriteStock: string = "AA";
+  userEmail: string = '';
+
+  constructor(private dataService: DataStocksService, private countryService: CountryService, private route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.userEmail = this.route.snapshot.params['email'];
     this.dataService.getStocksCatalog().subscribe((response: any) => {
       this.stocks = response['data'];
     });
@@ -41,6 +40,7 @@ export class NasaChartComponent {
       selectedStock: new FormControl<Stock | null>(null),
     });
   }
+
 
   filterStock(event: AutoCompleteCompleteEvent) {
     let filtered: any[] = [];
@@ -52,16 +52,15 @@ export class NasaChartComponent {
         }
     }
     this.filteredStocks = filtered;
-}
-
-  constructor(private dataService: DataStocksService, private countryService: CountryService) {}
+  }
 
   async getStocksData() {
+    this.yValues = [];
+    this.xValues = [];
     return new Promise<void>((resolve, reject) => {
       setTimeout(async () => {
         this.dataService.getStocksDataBySymbol(this.myFavoriteStock).subscribe((data: any) => {
           this.data = data;
-          console.log(data);
           const aaplData = data[this.myFavoriteStock];
           const applDataValues = aaplData.values;
           applDataValues.forEach((item: { close: any }) => {
@@ -69,27 +68,25 @@ export class NasaChartComponent {
           });
           applDataValues.forEach((item: { datetime: any }) => {
             const dateObject = new Date(item.datetime);
-            const timeString = dateObject.toLocaleTimeString('en-US', {
-              hour12: false,
-            });
+            const hours = dateObject.getHours().toString().padStart(2, '0');
+            const minutes = dateObject.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
             this.xValues.push(timeString);
           });
-          this.createStocksChart(this.myFavoriteStock);
           resolve();
         });
-      }, 1500);
+      }, 500);
     });
   }
 
   saveStock(){
-    console.log("guardando...");
     this.myFavoriteStock = this.formGroup.value['selectedStock'].symbol;
-    console.log(this.myFavoriteStock);
+    const stockName = this.formGroup.value['selectedStock'].name;
+    this.getStocksData();
+    setTimeout(() => {
+      this.createStocksChart(stockName);
+    }, 1500)
     this.formGroup.reset();
-  }
-
-  async ngAfterViewInit() {
-    this.callCreateStocksChart();
   }
 
   async callCreateStocksChart() {
@@ -102,15 +99,19 @@ export class NasaChartComponent {
 
   createStocksChart(labelValue: string) {
     const ctx = this.barChartCanvas.nativeElement.getContext('2d');
+    if(this.barChart){
+      this.barChart.clear();
+      this.barChart.destroy();
+    }
     this.barChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: this.xValues.reverse(),
         datasets: [
           {
-            label: `${labelValue} Stocks`,
+            label: labelValue,
             data: this.yValues.reverse(),
-            backgroundColor: ['rgba(255, 99, 132, 0.2'],
+            backgroundColor: ['rgba(84, 84, 99, 0.2'],
           },
         ],
       },
@@ -120,7 +121,7 @@ export class NasaChartComponent {
             beginAtZero: false,
             ticks: {
               callback: function (value, index, ticks) {
-                return value;
+                return '$' + Number(value).toFixed(2);
               },
             },
           },
