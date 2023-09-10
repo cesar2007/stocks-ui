@@ -49,5 +49,4 @@ export class WelcomeComponent implements OnInit {
     this.filteredStocks = filtered;
   }
 
-
 }
