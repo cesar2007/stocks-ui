@@ -26,7 +26,7 @@ export class NasaChartComponent {
   stocks!: Stock[];
   formGroup!: FormGroup;
   filteredStocks!: Stock[];
-  myFavoriteStock: string = "AA";
+  selectedStockSymbol: string = "AA";
   userEmail: string = '';
 
   constructor(private dataService: DataStocksService, private countryService: CountryService, private route: ActivatedRoute) {}
@@ -37,7 +37,7 @@ export class NasaChartComponent {
       this.stocks = response['data'];
     });
     this.formGroup = new FormGroup({
-      selectedStock: new FormControl<Stock | null>(null),
+      selectedStockSymbol: new FormControl<Stock | null>(null),
     });
   }
 
@@ -59,9 +59,9 @@ export class NasaChartComponent {
     this.xValues = [];
     return new Promise<void>((resolve, reject) => {
       setTimeout(async () => {
-        this.dataService.getStocksDataBySymbol(this.myFavoriteStock).subscribe((data: any) => {
+        this.dataService.getStocksDataBySymbol(this.selectedStockSymbol).subscribe((data: any) => {
           this.data = data;
-          const aaplData = data[this.myFavoriteStock];
+          const aaplData = data[this.selectedStockSymbol];
           const applDataValues = aaplData.values;
           applDataValues.forEach((item: { close: any }) => {
             this.yValues.push(Number(item.close));
@@ -80,8 +80,8 @@ export class NasaChartComponent {
   }
 
   saveStock(){
-    this.myFavoriteStock = this.formGroup.value['selectedStock'].symbol;
-    const stockName = this.formGroup.value['selectedStock'].name;
+    this.selectedStockSymbol = this.formGroup.value['selectedStockSymbol'].symbol;
+    const stockName = this.formGroup.value['selectedStockSymbol'].name;
     this.getStocksData();
     setTimeout(() => {
       this.createStocksChart(stockName);

@@ -4,7 +4,7 @@
   <p>Here, you can check on your favorite stocks</p>
   <div class="menubar">
     <form (ngSubmit)="saveStock()" [formGroup]="formGroup">
-      <p-autoComplete formControlName="selectedStock" [dropdown]="true" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
+      <p-autoComplete formControlName="selectedStockSymbol" [dropdown]="true" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </div>
