@@ -21,8 +21,8 @@
     </ng-template>
     <ng-template pTemplate="body" let-savedStock>
         <tr>
-            <td>{{ savedStock.symbol }}</td>
-            <td>{{ savedStock.name }}</td>
+            <td (click)="goToChartPage(savedStock.symbol)" role="button">{{ savedStock.symbol }}</td>
+            <td >{{ savedStock.name }}</td>
             <td>{{ savedStock.currency }}</td>
             <td (click)="deleteStockFromTable(savedStock.symbol)" role="button">delete</td>
         </tr>

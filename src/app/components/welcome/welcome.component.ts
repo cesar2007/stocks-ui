@@ -78,4 +78,8 @@ export class WelcomeComponent implements OnInit {
     })
   }
 
+  goToChartPage(symbol: string){
+   this.router.navigate(['chart', symbol]);
+  }
+
 }

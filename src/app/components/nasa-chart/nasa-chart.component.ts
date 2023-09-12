@@ -26,32 +26,14 @@ export class NasaChartComponent {
   stocks!: Stock[];
   formGroup!: FormGroup;
   filteredStocks!: Stock[];
-  selectedStockSymbol: string = "AA";
+  selectedStockSymbol: string = "";
   userEmail: string = '';
 
   constructor(private dataService: DataStocksService, private countryService: CountryService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.userEmail = this.route.snapshot.params['email'];
-    this.dataService.getStocksCatalog().subscribe((response: any) => {
-      this.stocks = response['data'];
-    });
-    this.formGroup = new FormGroup({
-      selectedStockSymbol: new FormControl<Stock | null>(null),
-    });
-  }
-
-
-  filterStock(event: AutoCompleteCompleteEvent) {
-    let filtered: any[] = [];
-    let query = event.query;
-    for (let i = 0; i < (this.stocks as any[]).length; i++) {
-        let stock = (this.stocks as any[])[i];
-        if (stock.symbol.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-            filtered.push(stock);
-        }
-    }
-    this.filteredStocks = filtered;
+    this.selectedStockSymbol = this.route.snapshot.params['stock'];
+    this.callCreateStocksChart();
   }
 
   async getStocksData() {
@@ -73,25 +55,18 @@ export class NasaChartComponent {
             const timeString = `${hours}:${minutes}`;
             this.xValues.push(timeString);
           });
+          console.log(this.yValues, this.xValues);
           resolve();
         });
       }, 500);
     });
   }
 
-  saveStock(){
-    this.selectedStockSymbol = this.formGroup.value['selectedStockSymbol'].symbol;
-    const stockName = this.formGroup.value['selectedStockSymbol'].name;
-    this.getStocksData();
-    setTimeout(() => {
-      this.createStocksChart(stockName);
-    }, 1500)
-    this.formGroup.reset();
-  }
 
   async callCreateStocksChart() {
     try {
       await this.getStocksData();
+      this.createStocksChart(this.selectedStockSymbol);
     } catch (error) {
       console.log('Error fetching stocks data: ', error);
     }
