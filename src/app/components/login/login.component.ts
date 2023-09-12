@@ -20,7 +20,6 @@ export class LoginComponent {
       email: [''],
       password: ['']
     })
-
   }
 
   get email(){
@@ -41,14 +40,6 @@ export class LoginComponent {
         console.log('there was an error in the response', error);
       }
     )
-    // this.authService.basicLogin(this.email).subscribe( data =>{
-    //   if (data.message === "Usuario autorizado"){
-    //     this.invalidLogin = false;
-    //     this.router.navigate(['/home', this.email]);
-    //   } else {
-    //     this.invalidLogin = true;
-    //   }
-    // })
   }
 
 }

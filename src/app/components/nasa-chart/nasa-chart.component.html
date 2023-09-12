@@ -1,13 +1,6 @@
 
 <div class="container">
-  <p>You are logged in as {{userEmail}}</p>
-  <p>Here, you can check on your favorite stocks</p>
-  <div class="menubar">
-    <form (ngSubmit)="saveStock()" [formGroup]="formGroup">
-      <p-autoComplete formControlName="selectedStockSymbol" [dropdown]="true" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
-      <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-  </div>
+  <p>This is the Chart Page!!</p>
 
   <div class="chart">
     <canvas #barChart ></canvas>

@@ -2,7 +2,7 @@
   <p>You are logged in as {{userEmail}}</p>
   <p>Here, you can check on your favorite stocks</p>
   <div class="menubar">
-    <form (ngSubmit)="saveStock()" [formGroup]="formGroup">
+    <form (ngSubmit)="saveStockInDatabase()" [formGroup]="formGroup">
       <p-autoComplete formControlName="selectedStockSymbol" [dropdown]="true" [suggestions]="filteredStocks" (completeMethod)="filterStock($event)" field="name"></p-autoComplete>
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
@@ -24,9 +24,9 @@
             <td>{{ savedStock.symbol }}</td>
             <td>{{ savedStock.name }}</td>
             <td>{{ savedStock.currency }}</td>
-            <td>delete</td>
+            <td (click)="deleteStockFromTable(savedStock.symbol)" role="button">delete</td>
         </tr>
     </ng-template>
 </p-table>
-
+<p-button (onClick)="logout()">Logout</p-button>
 </div>
